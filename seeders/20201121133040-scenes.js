@@ -6,19 +6,19 @@ module.exports = {
       "scenes",
       [
         {
-          spaceId: 1,
+          userId: 1,
           name: "The benefits of React part 1",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          spaceId: 1,
+          userId: 1,
           name: "The benefits of React part 2",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          spaceId: 2,
+          userId: 2,
           name: "My birth",
           createdAt: new Date(),
           updatedAt: new Date(),
