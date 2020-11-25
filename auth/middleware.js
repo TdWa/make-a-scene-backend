@@ -28,14 +28,10 @@ async function auth(req, res, next) {
 
     switch (error.name) {
       case "TokenExpiredError":
-        return res
-          .status(401)
-          .json({ error: error.name, message: error.message });
+        return res.status(401).json({ message: error.message });
 
       case "JsonWebTokenError":
-        return res
-          .status(400)
-          .json({ error: error.name, message: error.message });
+        return res.status(400).json({ message: error.message });
 
       default:
         return res.status(400).json({
