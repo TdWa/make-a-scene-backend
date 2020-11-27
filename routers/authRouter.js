@@ -2,7 +2,12 @@ const { Router } = require("express");
 const { toJWT } = require("../auth/jwt");
 const bcrypt = require("bcrypt");
 const authMiddleware = require("../auth/middleware");
-const { user: User, scene: Scene, actor: Actor } = require("../models");
+const {
+  user: User,
+  scene: Scene,
+  actor: Actor,
+  phrase: Phrase,
+} = require("../models");
 const { SALT_ROUNDS } = require("../config/constants");
 
 const router = new Router();
@@ -61,6 +66,7 @@ router.post("/login", async (req, res) => {
             {
               model: Actor,
               attributes: ["id", "type", "name", "backgroundColor", "color"],
+              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
             },
           ],
         },

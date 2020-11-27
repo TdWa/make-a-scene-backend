@@ -1,4 +1,9 @@
-const { user: User, scene: Scene, actor: Actor } = require("../models");
+const {
+  user: User,
+  scene: Scene,
+  actor: Actor,
+  phrase: Phrase,
+} = require("../models");
 const { toData } = require("./jwt");
 
 async function auth(req, res, next) {
@@ -23,6 +28,7 @@ async function auth(req, res, next) {
             {
               model: Actor,
               attributes: ["id", "type", "name", "backgroundColor", "color"],
+              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
             },
           ],
         },
