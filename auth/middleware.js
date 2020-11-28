@@ -1,4 +1,9 @@
-const User = require("../models").user;
+const {
+  user: User,
+  scene: Scene,
+  actor: Actor,
+  phrase: Phrase,
+} = require("../models");
 const { toData } = require("./jwt");
 
 async function auth(req, res, next) {
@@ -14,7 +19,22 @@ async function auth(req, res, next) {
 
   try {
     const data = toData(auth[1]);
-    const user = await User.findByPk(data.userId);
+    const user = await User.findByPk(data.userId, {
+      include: [
+        {
+          model: Scene,
+          attributes: ["id", "name"],
+          include: [
+            {
+              model: Actor,
+              attributes: ["id", "type", "name", "backgroundColor", "color"],
+              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
+            },
+          ],
+        },
+      ],
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
     if (!user) {
       return res.status(404).json({ message: "User does not exist" });
     }
