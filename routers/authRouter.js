@@ -66,7 +66,12 @@ router.post("/login", async (req, res) => {
             {
               model: Actor,
               attributes: ["id", "type", "name", "backgroundColor", "color"],
-              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
+              include: [
+                {
+                  model: Phrase,
+                  attributes: ["id", "actorId", "index", "text"],
+                },
+              ],
             },
           ],
         },

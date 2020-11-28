@@ -28,7 +28,12 @@ async function auth(req, res, next) {
             {
               model: Actor,
               attributes: ["id", "type", "name", "backgroundColor", "color"],
-              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
+              include: [
+                {
+                  model: Phrase,
+                  attributes: ["id", "actorId", "index", "text"],
+                },
+              ],
             },
           ],
         },
