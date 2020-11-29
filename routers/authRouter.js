@@ -28,9 +28,8 @@ router.post("/signup", async (req, res) => {
     });
 
     delete newUser.dataValues["password"]; // don't send back the password hash
-
-    console.log("newUser.id", newUser.id);
-    console.log("newUser.dataValues.id", newUser.dataValues.id);
+    delete newUser.dataValues["createdAt"]; // don't need this in frontend
+    delete newUser.dataValues["updatedAt"]; // don't need this in frontend
 
     const token = toJWT({ userId: newUser.id });
 
@@ -61,7 +60,7 @@ router.post("/login", async (req, res) => {
       include: [
         {
           model: Scene,
-          attributes: ["id", "name"],
+          attributes: ["id", "name", "description"],
           include: [
             {
               model: Actor,
