@@ -23,12 +23,17 @@ async function auth(req, res, next) {
       include: [
         {
           model: Scene,
-          attributes: ["id", "name"],
+          attributes: ["id", "name", "description"],
           include: [
             {
               model: Actor,
               attributes: ["id", "type", "name", "backgroundColor", "color"],
-              include: [{ model: Phrase, attributes: ["id", "index", "text"] }],
+              include: [
+                {
+                  model: Phrase,
+                  attributes: ["id", "actorId", "index", "text"],
+                },
+              ],
             },
           ],
         },
