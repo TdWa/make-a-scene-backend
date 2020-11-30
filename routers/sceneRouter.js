@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const authMiddleware = require("../auth/middleware");
-const { scene: Scene, actor: Actor } = require("../models");
+const { scene: Scene, actor: Actor, phrase: Phrase } = require("../models");
+const { Op } = require("sequelize");
 
 const router = new Router();
 
@@ -58,6 +59,72 @@ router.post("/", authMiddleware, async (req, res) => {
       ...scene.dataValues,
       actors: [{ ...firstActor.dataValues }, { ...secondActor.dataValues }],
     });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Something went wrong, sorry" });
+  }
+});
+
+/*
+update a scene:
+- update scene name and scene description
+- remove deleted phrases from the database
+- update changed phrases
+- add new phrases to database
+*/
+router.patch("/", authMiddleware, async (req, res) => {
+  try {
+    const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
+
+    // UPDATE THE SCENE
+    const sceneToUpdate = await Scene.findByPk(sceneId);
+    if (!sceneToUpdate) {
+      return res.status(404).json({ message: "Scene not found" });
+    }
+    const updatedScene = await sceneToUpdate.update({
+      name: sceneName,
+      description: sceneDescription,
+    });
+    delete updatedScene.dataValues.createdAt;
+    delete updatedScene.dataValues.updatedAt;
+    delete updatedScene.dataValues.userId;
+
+    // REMOVE PHRASES FROM THIS SCENE'S ACTORS IF THEY ARE NOT IN THE SCRIPT
+    const phraseIdsToKeep = script.map((phrase) => phrase.id);
+
+    await Phrase.destroy({
+      where: {
+        actorId: { [Op.in]: actorIds },
+        id: { [Op.notIn]: phraseIdsToKeep },
+      },
+    });
+
+    // UPDATE OR CREATE PHRASES IN THE SCRIPT
+    const newScript = [];
+    for (let i = 0; i < script.length; i++) {
+      const phrase = script[i];
+      phraseInDB = await Phrase.findByPk(phrase.id);
+      if (phraseInDB) {
+        const updatedPhrase = await phraseInDB.update({
+          index: phrase.index,
+          text: phrase.text,
+        });
+        delete updatedPhrase.dataValues.createdAt;
+        delete updatedPhrase.dataValues.updatedAt;
+        newScript.push(updatedPhrase.dataValues);
+      } else {
+        const newPhrase = await Phrase.create({
+          actorId: phrase.actorId,
+          index: phrase.index,
+          text: phrase.text,
+        });
+        delete newPhrase.dataValues.createdAt;
+        delete newPhrase.dataValues.updatedAt;
+        newScript.push(newPhrase.dataValues);
+      }
+    }
+
+    res.status(200).json({ scene: updatedScene.dataValues, script: newScript });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Something went wrong, sorry" });
