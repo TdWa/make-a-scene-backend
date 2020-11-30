@@ -1,6 +1,11 @@
 const { Router } = require("express");
 const authMiddleware = require("../auth/middleware");
-const { scene: Scene, actor: Actor, phrase: Phrase } = require("../models");
+const {
+  scene: Scene,
+  actor: Actor,
+  phrase: Phrase,
+  comment: Comment,
+} = require("../models");
 const { Op } = require("sequelize");
 
 const router = new Router();
@@ -65,13 +70,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-/*
-update a scene:
-- update scene name and scene description
-- remove deleted phrases from the database
-- update changed phrases
-- add new phrases to database
-*/
+// update a scene:
 router.patch("/", authMiddleware, async (req, res) => {
   try {
     const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
@@ -125,6 +124,52 @@ router.patch("/", authMiddleware, async (req, res) => {
     }
 
     res.status(200).json({ scene: updatedScene.dataValues, script: newScript });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Something went wrong, sorry" });
+  }
+});
+
+// delete a scene:
+router.delete("/", authMiddleware, async (req, res) => {
+  try {
+    const { sceneId } = req.body;
+
+    await Comment.destroy({
+      where: {
+        sceneId: sceneId,
+      },
+    });
+
+    const sceneActors = await Actor.findAll({
+      where: {
+        sceneId: sceneId,
+      },
+      attributes: ["id"],
+      raw: true,
+    });
+
+    for (let i = 0; i < sceneActors.length; i++) {
+      await Phrase.destroy({
+        where: {
+          actorId: sceneActors[i].id,
+        },
+      });
+    }
+
+    await Actor.destroy({
+      where: {
+        sceneId: sceneId,
+      },
+    });
+
+    await Scene.destroy({
+      where: {
+        id: sceneId,
+      },
+    });
+
+    res.status(200).json(sceneId);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Something went wrong, sorry" });
