@@ -8,8 +8,7 @@ module.exports = {
         {
           sceneId: 1,
           userId: 2,
-          text:
-            "That was the worst thing I have ever seen in my life. Incroyable!",
+          text: "That was the worst thing I have ever seen in my life.",
           createdAt: new Date(),
           updatedAt: new Date(),
         },

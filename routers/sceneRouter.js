@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
         },
         {
           model: Comment,
-          attributes: ["id", "userId", "text"],
+          attributes: ["id", "sceneId", "userId", "text", "createdAt"],
           include: [
             {
               model: User,
@@ -57,6 +57,7 @@ router.get("/", async (req, res) => {
         userId: comment.userId,
         userName: comment.user.name,
         text: comment.text,
+        createdAt: comment.createdAt,
       })),
     }));
 
