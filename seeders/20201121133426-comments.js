@@ -20,7 +20,7 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          sceneId: 2,
+          sceneId: 3,
           userId: 1,
           text: "Very... unique",
           createdAt: new Date(),
