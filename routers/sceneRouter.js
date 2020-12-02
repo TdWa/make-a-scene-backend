@@ -129,7 +129,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // update a scene:
-router.patch("/", authMiddleware, async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
 
@@ -189,7 +189,7 @@ router.patch("/", authMiddleware, async (req, res) => {
 });
 
 // delete a scene:
-router.delete("/", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { sceneId } = req.body;
 

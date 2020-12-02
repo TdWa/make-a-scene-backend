@@ -5,7 +5,7 @@ const { comment: Comment, user: User } = require("../models");
 const router = new Router();
 
 // delete a comment
-router.delete("/", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { commentId } = req.body;
 
