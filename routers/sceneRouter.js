@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const authMiddleware = require("../auth/middleware");
 const {
+  user: User,
   scene: Scene,
   actor: Actor,
   phrase: Phrase,
@@ -9,6 +10,63 @@ const {
 const { Op } = require("sequelize");
 
 const router = new Router();
+
+// get all scenes
+router.get("/", async (req, res) => {
+  try {
+    const scenes = await Scene.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name", "about"],
+        },
+        {
+          model: Comment,
+          attributes: ["id", "sceneId", "userId", "text", "createdAt"],
+          include: [
+            {
+              model: User,
+              attributes: ["name"],
+            },
+          ],
+        },
+        {
+          model: Actor,
+          attributes: ["id", "type", "name", "backgroundColor", "color"],
+          include: [
+            {
+              model: Phrase,
+              attributes: ["id", "actorId", "index", "text"],
+            },
+          ],
+        },
+      ],
+      attributes: ["id", "name", "description"],
+    });
+
+    const formattedScenes = scenes.map((scene) => ({
+      id: scene.id,
+      name: scene.name,
+      description: scene.description,
+      authorId: scene.user.id,
+      authorName: scene.user.name,
+      authorAbout: scene.user.about,
+      actors: scene.actors,
+      comments: scene.comments.map((comment) => ({
+        id: comment.id,
+        userId: comment.userId,
+        userName: comment.user.name,
+        text: comment.text,
+        createdAt: comment.createdAt,
+      })),
+    }));
+
+    res.status(200).json(formattedScenes);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Something went wrong, sorry" });
+  }
+});
 
 // create a new scene
 router.post("/", authMiddleware, async (req, res) => {
@@ -71,7 +129,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // update a scene:
-router.patch("/", authMiddleware, async (req, res) => {
+router.patch("/:id", authMiddleware, async (req, res) => {
   try {
     const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
 
@@ -131,7 +189,7 @@ router.patch("/", authMiddleware, async (req, res) => {
 });
 
 // delete a scene:
-router.delete("/", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { sceneId } = req.body;
 
