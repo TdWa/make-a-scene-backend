@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
       include: [
         {
           model: Scene,
-          attributes: ["id", "name", "description"],
+          attributes: ["id", "name", "backgroundColor", "description"],
           include: [
             {
               model: Actor,

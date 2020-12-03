@@ -41,12 +41,13 @@ router.get("/", async (req, res) => {
           ],
         },
       ],
-      attributes: ["id", "name", "description"],
+      attributes: ["id", "name", "backgroundColor", "description"],
     });
 
     const formattedScenes = scenes.map((scene) => ({
       id: scene.id,
       name: scene.name,
+      backgroundColor: scene.backgroundColor,
       description: scene.description,
       authorId: scene.user.id,
       authorName: scene.user.name,
@@ -72,11 +73,12 @@ router.get("/", async (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.dataValues.id;
-    const { sceneName, actors } = req.body;
+    const { sceneName, sceneBackgroundColor, actors } = req.body;
 
     const scene = await Scene.create({
       userId,
       name: sceneName,
+      backgroundColor: sceneBackgroundColor,
     });
     const sceneId = scene.dataValues.id;
 
@@ -131,7 +133,14 @@ router.post("/", authMiddleware, async (req, res) => {
 // update a scene:
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
-    const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
+    const {
+      sceneId,
+      sceneName,
+      sceneBackgroundColor,
+      sceneDescription,
+      script,
+      actorIds,
+    } = req.body;
 
     // UPDATE THE SCENE
     const sceneToUpdate = await Scene.findByPk(sceneId);
@@ -140,6 +149,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     }
     const updatedScene = await sceneToUpdate.update({
       name: sceneName,
+      backgroundColor: sceneBackgroundColor,
       description: sceneDescription,
     });
     delete updatedScene.dataValues.createdAt;

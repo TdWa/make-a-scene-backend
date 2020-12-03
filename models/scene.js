@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: { type: DataTypes.INTEGER, allowNull: false },
       name: { type: DataTypes.STRING, allowNull: false },
+      backgroundColor: { type: DataTypes.STRING, allowNull: false },
       description: DataTypes.STRING,
     },
     {

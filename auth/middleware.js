@@ -23,7 +23,7 @@ async function auth(req, res, next) {
       include: [
         {
           model: Scene,
-          attributes: ["id", "name", "description"],
+          attributes: ["id", "name", "backgroundColor", "description"],
           include: [
             {
               model: Actor,
