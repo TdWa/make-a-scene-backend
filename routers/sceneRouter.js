@@ -139,6 +139,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       sceneBackgroundColor,
       sceneDescription,
       script,
+      actors,
       actorIds,
     } = req.body;
 
@@ -166,11 +167,30 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       },
     });
 
+    // UPDATE THE ACTORS
+    const newActors = [];
+    for (let i = 0; i < actors.length; i++) {
+      const actor = actors[i];
+      const actorInDB = await Actor.findByPk(actor.id);
+      if (!actorInDB) {
+        return res.status(404).json({ message: "Actor not found" });
+      }
+      const updatedActor = await actorInDB.update({
+        name: actor.name,
+        backgroundColor: actor.backgroundColor,
+        color: actor.color,
+      });
+      delete updatedActor.dataValues.sceneId;
+      delete updatedActor.dataValues.createdAt;
+      delete updatedActor.dataValues.updatedAt;
+      newActors.push(updatedActor.dataValues);
+    }
+
     // UPDATE OR CREATE PHRASES IN THE SCRIPT
     const newScript = [];
     for (let i = 0; i < script.length; i++) {
       const phrase = script[i];
-      phraseInDB = await Phrase.findByPk(phrase.id);
+      const phraseInDB = await Phrase.findByPk(phrase.id);
       if (phraseInDB) {
         const updatedPhrase = await phraseInDB.update({
           index: phrase.index,
@@ -191,7 +211,15 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       }
     }
 
-    res.status(200).json({ scene: updatedScene.dataValues, script: newScript });
+    const formattedActors = newActors.map((actor) => ({
+      ...actor,
+      phrases: newScript.filter((phrase) => phrase.actorId === actor.id),
+    }));
+
+    res.status(200).json({
+      scene: updatedScene.dataValues,
+      actors: formattedActors,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Something went wrong, sorry" });
