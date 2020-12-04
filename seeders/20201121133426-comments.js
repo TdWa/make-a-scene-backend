@@ -21,8 +21,8 @@ module.exports = {
         },
         {
           sceneId: 3,
-          userId: 1,
-          text: "Very... unique",
+          userId: 2,
+          text: "Very inspiring, if I may say so myself.",
           createdAt: new Date(),
           updatedAt: new Date(),
         },

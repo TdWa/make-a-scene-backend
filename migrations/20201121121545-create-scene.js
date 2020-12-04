@@ -22,6 +22,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      backgroundColor: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       description: {
         type: Sequelize.TEXT,
       },

@@ -41,12 +41,13 @@ router.get("/", async (req, res) => {
           ],
         },
       ],
-      attributes: ["id", "name", "description"],
+      attributes: ["id", "name", "backgroundColor", "description"],
     });
 
     const formattedScenes = scenes.map((scene) => ({
       id: scene.id,
       name: scene.name,
+      backgroundColor: scene.backgroundColor,
       description: scene.description,
       authorId: scene.user.id,
       authorName: scene.user.name,
@@ -72,11 +73,12 @@ router.get("/", async (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.dataValues.id;
-    const { sceneName, actors } = req.body;
+    const { sceneName, sceneBackgroundColor, actors } = req.body;
 
     const scene = await Scene.create({
       userId,
       name: sceneName,
+      backgroundColor: sceneBackgroundColor,
     });
     const sceneId = scene.dataValues.id;
 
@@ -131,7 +133,15 @@ router.post("/", authMiddleware, async (req, res) => {
 // update a scene:
 router.patch("/:id", authMiddleware, async (req, res) => {
   try {
-    const { sceneId, sceneName, sceneDescription, script, actorIds } = req.body;
+    const {
+      sceneId,
+      sceneName,
+      sceneBackgroundColor,
+      sceneDescription,
+      script,
+      actors,
+      actorIds,
+    } = req.body;
 
     // UPDATE THE SCENE
     const sceneToUpdate = await Scene.findByPk(sceneId);
@@ -140,6 +150,7 @@ router.patch("/:id", authMiddleware, async (req, res) => {
     }
     const updatedScene = await sceneToUpdate.update({
       name: sceneName,
+      backgroundColor: sceneBackgroundColor,
       description: sceneDescription,
     });
     delete updatedScene.dataValues.createdAt;
@@ -156,11 +167,30 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       },
     });
 
+    // UPDATE THE ACTORS
+    const newActors = [];
+    for (let i = 0; i < actors.length; i++) {
+      const actor = actors[i];
+      const actorInDB = await Actor.findByPk(actor.id);
+      if (!actorInDB) {
+        return res.status(404).json({ message: "Actor not found" });
+      }
+      const updatedActor = await actorInDB.update({
+        name: actor.name,
+        backgroundColor: actor.backgroundColor,
+        color: actor.color,
+      });
+      delete updatedActor.dataValues.sceneId;
+      delete updatedActor.dataValues.createdAt;
+      delete updatedActor.dataValues.updatedAt;
+      newActors.push(updatedActor.dataValues);
+    }
+
     // UPDATE OR CREATE PHRASES IN THE SCRIPT
     const newScript = [];
     for (let i = 0; i < script.length; i++) {
       const phrase = script[i];
-      phraseInDB = await Phrase.findByPk(phrase.id);
+      const phraseInDB = await Phrase.findByPk(phrase.id);
       if (phraseInDB) {
         const updatedPhrase = await phraseInDB.update({
           index: phrase.index,
@@ -181,7 +211,15 @@ router.patch("/:id", authMiddleware, async (req, res) => {
       }
     }
 
-    res.status(200).json({ scene: updatedScene.dataValues, script: newScript });
+    const formattedActors = newActors.map((actor) => ({
+      ...actor,
+      phrases: newScript.filter((phrase) => phrase.actorId === actor.id),
+    }));
+
+    res.status(200).json({
+      scene: updatedScene.dataValues,
+      actors: formattedActors,
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ message: "Something went wrong, sorry" });
