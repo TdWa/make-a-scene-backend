@@ -12,6 +12,7 @@
     "dialect": "mysql"
   },
   "production": {
-    "use_env_variable": "postgres://cwckufpx:S5GD1cYyjmyHCVCcGz-wSvFELPR0uWQQ@hattie.db.elephantsql.com:5432/cwckufpx"
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres"
   }
 }
