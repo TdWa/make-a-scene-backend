@@ -8,8 +8,7 @@ module.exports = {
         {
           sceneId: 1,
           userId: 2,
-          text:
-            "That was the worst thing I have ever seen in my life. Incroyable!",
+          text: "That was the worst thing I have ever seen in my life.",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -21,9 +20,9 @@ module.exports = {
           updatedAt: new Date(),
         },
         {
-          sceneId: 2,
-          userId: 1,
-          text: "Very... unique",
+          sceneId: 3,
+          userId: 2,
+          text: "Very inspiring, if I may say so myself.",
           createdAt: new Date(),
           updatedAt: new Date(),
         },

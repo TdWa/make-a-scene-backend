@@ -8,15 +8,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      scene.belongsTo(models.space);
+      scene.belongsTo(models.user);
       scene.hasMany(models.actor);
       scene.hasMany(models.comment);
     }
   }
   scene.init(
     {
-      spaceId: { type: DataTypes.INTEGER, allowNull: false },
+      userId: { type: DataTypes.INTEGER, allowNull: false },
       name: { type: DataTypes.STRING, allowNull: false },
+      backgroundColor: { type: DataTypes.STRING, allowNull: false },
+      description: DataTypes.STRING,
     },
     {
       sequelize,

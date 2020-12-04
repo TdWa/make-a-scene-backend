@@ -7,8 +7,8 @@ module.exports = {
       [
         {
           sceneId: 1,
-          type: "male",
-          name: '<div id="Antonio" >',
+          type: "man",
+          name: "Antonio",
           backgroundColor: "#ffffff",
           color: "#000000",
           createdAt: new Date(),
@@ -16,8 +16,8 @@ module.exports = {
         },
         {
           sceneId: 1,
-          type: "female",
-          name: '<div id="Eva" >',
+          type: "woman",
+          name: "Eva",
           backgroundColor: "#ffffff",
           color: "#000000",
           createdAt: new Date(),
@@ -25,8 +25,8 @@ module.exports = {
         },
         {
           sceneId: 2,
-          type: "male",
-          name: '<div id="Antonio" >',
+          type: "man",
+          name: "Antonio",
           backgroundColor: "#ffffff",
           color: "#000000",
           createdAt: new Date(),
@@ -34,8 +34,8 @@ module.exports = {
         },
         {
           sceneId: 2,
-          type: "female",
-          name: '<div id="Eva" >',
+          type: "woman",
+          name: "Eva",
           backgroundColor: "#ffffff",
           color: "#000000",
           createdAt: new Date(),
@@ -43,10 +43,10 @@ module.exports = {
         },
         {
           sceneId: 3,
-          type: "male",
+          type: "man",
           name: "Me",
-          backgroundColor: "#000000",
-          color: "#ffffff",
+          backgroundColor: "#ffcccc",
+          color: "#000000",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
