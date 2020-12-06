@@ -104,7 +104,7 @@ router.post("/", authMiddleware, async (req, res) => {
     if (!actor2) {
       return res.status(200).json({
         ...scene.dataValues,
-        actors: [{ ...firstActor.dataValues }],
+        actors: [firstActor.dataValues],
       });
     }
     const secondActor = await Actor.create({
@@ -122,7 +122,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     res.status(200).json({
       ...scene.dataValues,
-      actors: [{ ...firstActor.dataValues }, { ...secondActor.dataValues }],
+      actors: [firstActor.dataValues, secondActor.dataValues],
     });
   } catch (error) {
     console.log(error);
